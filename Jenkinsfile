@@ -71,14 +71,13 @@ def pre_test(){
 }
 
 pipeline {
-  agent none
+  agent {label 'master'}
   options { skipDefaultCheckout() } 
   environment{
       WK = '/var/lib/jenkins/workspace/server-sdk-java'
   }
   stages {
     stage('pre_build'){
-      agent {label 'master'}
       options { skipDefaultCheckout() } 
       when {
         changeRequest()
