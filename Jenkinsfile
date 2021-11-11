@@ -33,9 +33,10 @@ def abort_previous(){
   milestone(buildNumber)
 }
 def pre_test(){
-    sh'hostname'
+    sh 'hostname'
     sh '''
     cd ${WK}
+    echo ${WK}
     git reset --hard HEAD~10 >/dev/null
     '''
     script {
@@ -58,7 +59,7 @@ def pre_test(){
         '''
       }
     }
-    sh'''
+    sh '''
     cd ${WK}
     git pull >/dev/null
     git fetch origin +refs/pull/${CHANGE_ID}/merge
@@ -72,17 +73,18 @@ pipeline {
   agent none
   options { skipDefaultCheckout() } 
   environment{
-      WK = '/var/lib/jenkins/workspace/TDC-Mgmt'
+      WK = '/var/lib/jenkins/workspace/server-sdk-java'
   }
   stages {
     stage('pre_build'){
-      agent{label 'master'}
+      agent {label 'master'}
       options { skipDefaultCheckout() } 
       when {
         changeRequest()
       }
       steps {
         script{
+          echo 'pre_build'
           abort_previous()
           abortPreviousBuilds()
         }
@@ -94,6 +96,8 @@ pipeline {
           pre_test()
           sh '''
           cd ${WK}
+          pwd
+          echo ${WK}
           mvn package install -DskipTests=true
           '''
         }
