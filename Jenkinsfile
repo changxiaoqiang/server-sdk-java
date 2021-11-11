@@ -410,7 +410,6 @@ pipeline {
   }
   post {
     success {
-      if (env.CHANGE_TARGET == 'master') {
         emailext (
           subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' SUCCESS",
           body: """<!DOCTYPE html>
@@ -445,10 +444,8 @@ pipeline {
           to: "${env.CHANGE_AUTHOR_EMAIL}",
           from: "sqchang@taosdata.com"
         )
-      }
     }
     failure {
-      if (env.CHANGE_TARGET == 'master') {
         emailext (
             subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' FAIL",
             body: """<!DOCTYPE html>
@@ -483,7 +480,6 @@ pipeline {
             to: "${env.CHANGE_AUTHOR_EMAIL}",
             from: "sqchang@taosdata.com"
         )
-      }
     }
   }
 }
