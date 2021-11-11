@@ -57,7 +57,7 @@ def pre_test(){
       else {
         sh '''
         cd ${WK}
-        git checkout dev
+        git checkout develop
         '''
       }
     }
@@ -92,50 +92,15 @@ pipeline {
       }
     }
     stage('Maven Build') {
-        // when {
-        //   allOf{
-        //       changeRequest()
-        //       not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
-        //     }
-        //   }
-      steps {
-        sh'echo ${WK}'
-        sh'hostname'
-        sh '''
-        cd ${WK}
-        echo ${WK}
-        git reset --hard HEAD~10 >/dev/null
-        '''
-        script {
-          echo env.CHANGE_TARGET
-          if (env.CHANGE_TARGET == 'master') {
-            sh '''
-            cd ${WK}
-            git checkout master
-            '''
-          }
-          // else if(env.CHANGE_TARGET == '2.0'){
-          //   sh '''
-          //   cd ${WK}
-          //   git checkout 2.0
-          //   '''
-          // }
-          else {
-            sh '''
-            cd ${WK}
-            git checkout master
-            '''
-          }
+      when {
+        allOf{
+            changeRequest()
+            // not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
         }
-        sh '''
-        cd ${WK}
-        git pull >/dev/null
-        git fetch origin +refs/pull/${CHANGE_ID}/merge
-        git checkout -qf FETCH_HEAD
-        git clean -dfx
-        '''
+      }
+      pre_test()
+      steps {
         script {
-          sh'echo ${WK}'
           sh '''
           cd ${WK}
           pwd
@@ -481,7 +446,7 @@ pipeline {
         </body>
         </html>""",
         to: "${env.CHANGE_AUTHOR_EMAIL}",
-        from: "support@taosdata.com"
+        from: "changshuaiqiang@163.com"
       )
     }
     failure {
@@ -517,7 +482,7 @@ pipeline {
           </body>
           </html>""",
           to: "${env.CHANGE_AUTHOR_EMAIL}",
-          from: "support@taosdata.com"
+          from: "changshuaiqiang@163.com"
       )
     }
   }
