@@ -92,7 +92,6 @@ pipeline {
       }
     }
     stage('Maven Build') {
-      options { skipDefaultCheckout() } 
         // when {
         //   allOf{
         //       changeRequest()
@@ -100,7 +99,40 @@ pipeline {
         //     }
         //   }
       steps {
-        pre_test()
+        sh'echo ${WK}'
+        sh'hostname'
+        sh '''
+        cd ${WK}
+        echo ${WK}
+        git reset --hard HEAD~10 >/dev/null
+        '''
+        script {
+          if (env.CHANGE_TARGET == 'master') {
+            sh '''
+            cd ${WK}
+            git checkout master
+            '''
+          }
+          // else if(env.CHANGE_TARGET == '2.0'){
+          //   sh '''
+          //   cd ${WK}
+          //   git checkout 2.0
+          //   '''
+          // }
+          else {
+            sh '''
+            cd ${WK}
+            git checkout develop
+            '''
+          }
+        }
+        sh '''
+        cd ${WK}
+        git pull >/dev/null
+        git fetch origin +refs/pull/${CHANGE_ID}/merge
+        git checkout -qf FETCH_HEAD
+        git clean -dfx
+        '''
         script {
           sh'echo ${WK}'
           sh '''
