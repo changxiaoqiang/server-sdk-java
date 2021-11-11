@@ -410,6 +410,9 @@ pipeline {
   }
   post {
     success {
+      when {
+        changeRequest()
+      }
       emailext (
         subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' SUCCESS",
         body: """<!DOCTYPE html>
@@ -421,20 +424,20 @@ pipeline {
               <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
                   <tr>
                     <td><br />
-                      <b><font color="#0B610B"><font size="6">构建信息</font></font></b>
+                      <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
                       <hr size="2" width="100%" align="center" />
                     </td>
                   </tr>
                   <tr>
                     <td>
                     <ul style="font-size:18px">
-                      <li>构建名称>>分支：${env.BRANCH_NAME}</li>
-                      <li>构建结果：<span style="color:green"> Successful </span></li>
-                      <li>构建编号：${BUILD_NUMBER}</li>
-                      <li>触发用户：${env.CHANGE_AUTHOR}</li>
-                      <li>提交信息：${env.CHANGE_TITLE}</li>
-                      <li>构建地址：<a href=${BUILD_URL}>${BUILD_URL}</a></li>
-                      <li>构建日志：<a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
+                      <li>Build Name>>Branch: ${env.BRANCH_NAME}</li>
+                      <li>Result: <span style="color:green"> Successful </span></li>
+                      <li>Num: ${BUILD_NUMBER}</li>
+                      <li>Commit User: ${env.CHANGE_AUTHOR}</li>
+                      <li>Commit Title: ${env.CHANGE_TITLE}</li>
+                      <li>Build Url: <a href=${BUILD_URL}>${BUILD_URL}</a></li>
+                      <li>Build Log: <a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
                     </ul>
                     </td>
                   </tr>
@@ -457,20 +460,20 @@ pipeline {
               <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
                   <tr>
                     <td><br />
-                      <b><font color="#0B610B"><font size="6">构建信息</font></font></b>
+                      <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
                       <hr size="2" width="100%" align="center" />
                     </td>
                   </tr>
                   <tr>
                     <td>
                       <ul style="font-size:18px">
-                        <li>构建名称>>分支：${env.BRANCH_NAME}</li>
-                        <li>构建结果：<span style="color:red"> Failure </span></li>
-                        <li>构建编号：${BUILD_NUMBER}</li>
-                        <li>触发用户：${env.CHANGE_AUTHOR}</li>
-                        <li>提交信息：${env.CHANGE_TITLE}</li>
-                        <li>构建地址：<a href=${BUILD_URL}>${BUILD_URL}</a></li>
-                        <li>构建日志：<a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
+                        <li>Build Name>>Branch: ${env.BRANCH_NAME}</li>
+                        <li>Result: <span style="color:red"> Failure </span></li>
+                        <li>Num: ${BUILD_NUMBER}</li>
+                        <li>Commit User: ${env.CHANGE_AUTHOR}</li>
+                        <li>Commit Title: ${env.CHANGE_TITLE}</li>
+                        <li>Build Url: <a href=${BUILD_URL}>${BUILD_URL}</a></li>
+                        <li>Build Log: <a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
                       </ul>
                     </td>
                   </tr>
