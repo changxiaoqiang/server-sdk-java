@@ -33,7 +33,7 @@ def abort_previous(){
   milestone(buildNumber)
 }
 def pre_test(){
-    sh 'hostname'
+    sh "hostname"
     sh '''
     cd ${WK}
     echo ${WK}
