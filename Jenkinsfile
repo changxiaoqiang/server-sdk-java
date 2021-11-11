@@ -409,80 +409,81 @@ pipeline {
     } */
   }
   post {
-    when {
-      changeRequest()
-    }
     success {
-      emailext (
-        subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' SUCCESS",
-        body: """<!DOCTYPE html>
-          <html>
-          <head>
-          <meta charset="UTF-8">
-          </head>
-          <body leftmargin="8" marginwidth="0" topmargin="8" marginheight="4" offset="0">
-              <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
-                  <tr>
-                    <td><br />
-                      <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
-                      <hr size="2" width="100%" align="center" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                    <ul style="font-size:18px">
-                      <li>Build Name>>Branch: ${env.BRANCH_NAME}</li>
-                      <li>Result: <span style="color:green"> Successful </span></li>
-                      <li>Num: ${BUILD_NUMBER}</li>
-                      <li>Commit User: ${env.CHANGE_AUTHOR}</li>
-                      <li>Commit Title: ${env.CHANGE_TITLE}</li>
-                      <li>Build Url: <a href=${BUILD_URL}>${BUILD_URL}</a></li>
-                      <li>Build Log: <a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
-                    </ul>
-                    </td>
-                  </tr>
-              </table></font>
-          </body>
-          </html>""",
-        to: "${env.CHANGE_AUTHOR_EMAIL}",
-        from: "sqchang@taosdata.com"
-      )
-    }
-    failure {
-      emailext (
-          subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' FAIL",
+      if (env.CHANGE_TARGET == 'master') {
+        emailext (
+          subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' SUCCESS",
           body: """<!DOCTYPE html>
-          <html>
-          <head>
-          <meta charset="UTF-8">
-          </head>
-          <body leftmargin="8" marginwidth="0" topmargin="8" marginheight="4" offset="0">
-              <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
-                  <tr>
-                    <td><br />
-                      <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
-                      <hr size="2" width="100%" align="center" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
+            <html>
+            <head>
+            <meta charset="UTF-8">
+            </head>
+            <body leftmargin="8" marginwidth="0" topmargin="8" marginheight="4" offset="0">
+                <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
+                    <tr>
+                      <td><br />
+                        <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
+                        <hr size="2" width="100%" align="center" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
                       <ul style="font-size:18px">
                         <li>Build Name>>Branch: ${env.BRANCH_NAME}</li>
-                        <li>Result: <span style="color:red"> Failure </span></li>
+                        <li>Result: <span style="color:green"> Successful </span></li>
                         <li>Num: ${BUILD_NUMBER}</li>
                         <li>Commit User: ${env.CHANGE_AUTHOR}</li>
                         <li>Commit Title: ${env.CHANGE_TITLE}</li>
                         <li>Build Url: <a href=${BUILD_URL}>${BUILD_URL}</a></li>
                         <li>Build Log: <a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
                       </ul>
-                    </td>
-                  </tr>
-              </table></font>
-          </body>
-          </html>""",
+                      </td>
+                    </tr>
+                </table></font>
+            </body>
+            </html>""",
           to: "${env.CHANGE_AUTHOR_EMAIL}",
           from: "sqchang@taosdata.com"
-      )
+        )
+      }
+    }
+    failure {
+      if (env.CHANGE_TARGET == 'master') {
+        emailext (
+            subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' FAIL",
+            body: """<!DOCTYPE html>
+            <html>
+            <head>
+            <meta charset="UTF-8">
+            </head>
+            <body leftmargin="8" marginwidth="0" topmargin="8" marginheight="4" offset="0">
+                <table width="95%" cellpadding="0" cellspacing="0" style="font-size: 16pt; font-family: Tahoma, Arial, Helvetica, sans-serif">
+                    <tr>
+                      <td><br />
+                        <b><font color="#0B610B"><font size="6">Build Info</font></font></b>
+                        <hr size="2" width="100%" align="center" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <ul style="font-size:18px">
+                          <li>Build Name>>Branch: ${env.BRANCH_NAME}</li>
+                          <li>Result: <span style="color:red"> Failure </span></li>
+                          <li>Num: ${BUILD_NUMBER}</li>
+                          <li>Commit User: ${env.CHANGE_AUTHOR}</li>
+                          <li>Commit Title: ${env.CHANGE_TITLE}</li>
+                          <li>Build Url: <a href=${BUILD_URL}>${BUILD_URL}</a></li>
+                          <li>Build Log: <a href=${BUILD_URL}console>${BUILD_URL}console</a></li>
+                        </ul>
+                      </td>
+                    </tr>
+                </table></font>
+            </body>
+            </html>""",
+            to: "${env.CHANGE_AUTHOR_EMAIL}",
+            from: "sqchang@taosdata.com"
+        )
+      }
     }
   }
 }
