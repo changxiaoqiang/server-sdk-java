@@ -92,9 +92,17 @@ pipeline {
       }
     }
     stage('Maven Build') {
+      options { skipDefaultCheckout() } 
+        // when {
+        //   allOf{
+        //       changeRequest()
+        //       not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
+        //     }
+        //   }
       steps {
+        pre_test()
         script {
-          pre_test()
+          sh'echo ${WK}'
           sh '''
           cd ${WK}
           pwd
