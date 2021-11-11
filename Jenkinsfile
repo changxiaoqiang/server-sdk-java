@@ -409,10 +409,10 @@ pipeline {
     } */
   }
   post {
+    when {
+      changeRequest()
+    }
     success {
-      when {
-        changeRequest()
-      }
       emailext (
         subject: "PR-result: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' SUCCESS",
         body: """<!DOCTYPE html>
