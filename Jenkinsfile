@@ -107,6 +107,7 @@ pipeline {
         git reset --hard HEAD~10 >/dev/null
         '''
         script {
+          echo env.CHANGE_TARGET
           if (env.CHANGE_TARGET == 'master') {
             sh '''
             cd ${WK}
@@ -122,7 +123,7 @@ pipeline {
           else {
             sh '''
             cd ${WK}
-            git checkout develop
+            git checkout master
             '''
           }
         }
