@@ -93,11 +93,8 @@ pipeline {
     }
     stage('Maven Build') {
       when {
-        allOf{
-            changeRequest()
-            // not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
-          }
-        }
+        changeRequest()
+      }
       steps {
         pre_test()
         script {
