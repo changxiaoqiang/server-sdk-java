@@ -96,10 +96,10 @@ pipeline {
         allOf{
             changeRequest()
             // not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
+          }
         }
-      }
-      pre_test()
       steps {
+        pre_test()
         script {
           sh '''
           cd ${WK}
