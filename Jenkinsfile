@@ -13,7 +13,6 @@ def abortPreviousBuilds() {
   def jobs = Jenkins.instance.getItemByFullName(currentJobName)
   def builds = jobs.getBuilds()
 
-  
   for (build in builds) {
     if (!build.isBuilding()) {
       continue;
@@ -103,311 +102,26 @@ pipeline {
           cd ${WK}
           pwd
           echo ${WK}
-          mvn package install -DskipTests=true
+          mvn clean package
           '''
         }
       }
     }
-/*     stage('Parallel test stage') {
-      //only build pr
-      options { skipDefaultCheckout() } 
+    stage('Deploy') {
       when {
-        allOf{
-            changeRequest()
-            not{ expression { env.CHANGE_BRANCH =~ /docs\// }}
-          }
-        }
-      parallel {
-        stage('python_1_s1') {
-          agent{label " slave1 || slave11 "}
-          steps {
-            pre_test()
-            timeout(time: 55, unit: 'MINUTES'){
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh p1
-              date'''
-            }
-            
-          }
-        }
-        stage('python_2_s5') {
-          agent{label " slave5 || slave15 "}
-          steps {
-            
-            pre_test()
-            timeout(time: 55, unit: 'MINUTES'){
-                sh '''
-                date
-                cd ${WKC}/tests
-                ./test-all.sh p2
-                date'''
-            }
-          }
-        }
-        stage('python_3_s6') {
-          agent{label " slave6 || slave16 "}
-          steps {     
-            timeout(time: 55, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh p3
-              date'''
-            }
-          }
-        }
-        stage('test_b1_s2') {
-          agent{label " slave2 || slave12 "}
-          steps {     
-            timeout(time: 55, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-                rm -rf /var/lib/taos/*
-                rm -rf /var/log/taos/*
-                nohup taosd >/dev/null &
-                sleep 10
-              '''
-              sh '''
-              cd ${WKC}/tests/examples/nodejs
-              npm install td2.0-connector > /dev/null 2>&1
-              node nodejsChecker.js host=localhost
-              node test1970.js
-        cd ${WKC}/tests/connectorTest/nodejsTest/nanosupport
-        npm install td2.0-connector > /dev/null 2>&1
-              node nanosecondTest.js
-              '''
-
-              sh '''
-              cd ${WKC}/tests/examples/C#/taosdemo
-              mcs -out:taosdemo *.cs > /dev/null 2>&1
-              echo '' |./taosdemo -c /etc/taos
-              '''
-              sh '''
-                cd ${WKC}/tests/gotest
-                bash batchtest.sh
-              '''
-              sh '''
-              cd ${WKC}/tests
-              ./test-all.sh b1fq
-              date'''
-            }
-          }
-        }
-        stage('test_crash_gen_s3') {
-          agent{label " slave3 || slave13 "}
-          
-          steps {
-            pre_test()
-            timeout(time: 60, unit: 'MINUTES'){
-              sh '''
-              cd ${WKC}/tests/pytest
-              ./crash_gen.sh -a -p -t 4 -s 2000
-              '''
-            }
-            timeout(time: 60, unit: 'MINUTES'){
-              sh '''
-              cd ${WKC}/tests/pytest
-              rm -rf /var/lib/taos/*
-              rm -rf /var/log/taos/*
-              ./handle_crash_gen_val_log.sh
-              '''
-              sh '''
-              cd ${WKC}/tests/pytest
-              rm -rf /var/lib/taos/*
-              rm -rf /var/log/taos/*
-              ./handle_taosd_val_log.sh
-              '''
-            }
-            timeout(time: 55, unit: 'MINUTES'){
-                sh '''
-                date
-                cd ${WKC}/tests
-                ./test-all.sh b2fq
-                date
-                '''
-            }                     
-          }
-        }
-        stage('test_valgrind_s4') {
-          agent{label " slave4 || slave14 "}
-
-          steps {
-            pre_test()
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                sh '''
-                cd ${WKC}/tests/pytest
-                ./valgrind-test.sh 2>&1 > mem-error-out.log
-                ./handle_val_log.sh
-                '''
-            }     
-            timeout(time: 55, unit: 'MINUTES'){      
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh b3fq
-              date'''
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh full example
-              date'''
-            }
-          }
-        }
-        stage('test_b4_s7') {
-          agent{label " slave7 || slave17 "}
-          steps {     
-            timeout(time: 105, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh b4fq
-              cd ${WKC}/tests
-              ./test-all.sh p4
-              '''
-              // cd ${WKC}/tests
-              // ./test-all.sh full jdbc
-              // cd ${WKC}/tests
-              // ./test-all.sh full unit
-              
-            }
-          }
-        }
-        stage('test_b5_s8') {
-          agent{label " slave8 || slave18 "}
-          steps {     
-            timeout(time: 55, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh b5fq
-              date'''
-            }
-          }
-        }
-        stage('test_b6_s9') {
-          agent{label " slave9 || slave19 "}
-          steps {     
-            timeout(time: 55, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh b6fq
-              date'''
-            }
-          }
-        }
-        stage('test_b7_s10') {
-          agent{label " slave10 || slave20 "}
-          steps {     
-            timeout(time: 55, unit: 'MINUTES'){       
-              pre_test()
-              sh '''
-              date
-              cd ${WKC}/tests
-              ./test-all.sh b7fq
-              date'''              
-            }
-          }
-        } 
-        stage('arm64centos7') {
-          agent{label " arm64centos7 "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('arm64centos8') {
-          agent{label " arm64centos8 "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('arm32bionic') {
-          agent{label " arm32bionic "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('arm64bionic') {
-          agent{label " arm64bionic "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('arm64focal') {
-          agent{label " arm64focal "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('centos7') {
-          agent{label " centos7 "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('ubuntu:trusty') {
-          agent{label " trusty "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('ubuntu:xenial') {
-          agent{label " xenial "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('ubuntu:bionic') {
-          agent{label " bionic "}
-          steps {     
-              pre_test_noinstall()    
-            }
-        }
-        stage('Mac_build') {
-          agent{label " catalina "}
-          steps {     
-              pre_test_mac()    
-            }
-        }
-
-        stage('build'){
-          agent{label " wintest "}
-          steps {
-            pre_test()
-            script{             
-                while(win_stop == 0){
-                  sleep(1)
-                  }
-              }
-            }
-        }
-        stage('test'){
-          agent{label "win"}
-          steps{
-            
-            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                pre_test_win()
-                timeout(time: 20, unit: 'MINUTES'){
-                bat'''
-                cd C:\\workspace\\TDinternal\\community\\tests\\pytest
-                .\\test-all.bat wintest
-                '''
-                }
-            }     
-            script{
-              win_stop=1
-            }
-          }
+        changeRequest()
+      }
+      steps {
+        pre_test()
+        script {
+          sh '''
+          ssh -i ~/.ssh/deploy "mkdir -p /data/app/server-sdk/"
+          scp -i ~/.ssh/deploy /var/lib/jenkins/workspace/server-sdk-java/target/server-sdk-java-3.0.4.jar root@192.168.1.165:/data/app/server-sdk/
+          ssh -i ~/.ssh/deploy "cd /data/app/server-sdk/ && nohup java -jar /data/app/server-sdk/server-sdk-java-3.0.4.jar >/dev/null 2>&1 &"
+          '''
         }
       }
-    } */
+    }
   }
   post {
     success {
