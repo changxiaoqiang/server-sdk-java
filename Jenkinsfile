@@ -112,7 +112,6 @@ pipeline {
         changeRequest()
       }
       steps {
-        pre_test()
         script {
           sh '''
           ssh -i ~/.ssh/deploy root@192.168.1.165 "mkdir -p /data/app/server-sdk/"
