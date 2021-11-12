@@ -13,3 +13,12 @@ src/com.fcloud.connectmanager/build.xml
 .fuse*
 src/out/
 *.pyc
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
