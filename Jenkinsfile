@@ -13,6 +13,7 @@ def abortPreviousBuilds() {
   def jobs = Jenkins.instance.getItemByFullName(currentJobName)
   def builds = jobs.getBuilds()
 
+  
   for (build in builds) {
     if (!build.isBuilding()) {
       continue;
