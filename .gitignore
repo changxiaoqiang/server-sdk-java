@@ -3,7 +3,6 @@
 *.bak
 src/.metadata/
 bin/
-.settings/
 .idea*/
 target/
 logs/
