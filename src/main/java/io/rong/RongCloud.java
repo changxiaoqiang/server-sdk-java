@@ -128,7 +128,7 @@ public class RongCloud {
 			}
 			rongCloud.putIfAbsent(appKey,rc );
 		}
-		System.out.println("getInstance");
+		System.out.println("getInstance1111");
 		return rongCloud.get(appKey);
 	}
 
