@@ -115,9 +115,9 @@ pipeline {
         pre_test()
         script {
           sh '''
-          ssh -i ~/.ssh/deploy "mkdir -p /data/app/server-sdk/"
+          ssh -i ~/.ssh/deploy root@192.168.1.165 "mkdir -p /data/app/server-sdk/"
           scp -i ~/.ssh/deploy /var/lib/jenkins/workspace/server-sdk-java/target/server-sdk-java-3.0.4.jar root@192.168.1.165:/data/app/server-sdk/
-          ssh -i ~/.ssh/deploy "cd /data/app/server-sdk/ && nohup java -jar /data/app/server-sdk/server-sdk-java-3.0.4.jar >/dev/null 2>&1 &"
+          ssh -i ~/.ssh/deploy root@192.168.1.165 "cd /data/app/server-sdk/ && nohup java -jar /data/app/server-sdk/server-sdk-java-3.0.4.jar &"
           '''
         }
       }
